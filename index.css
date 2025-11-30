@@ -12,15 +12,88 @@
 }
 
 @media print {
-  .no-print {
+  /* Reset page constraints and hide browser UI */
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  /* Reset root containers to avoid clipping */
+  html, body {
+    height: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+    background-color: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide everything by default */
+  body > * {
     display: none !important;
   }
+
+  /* BUT, we need to show the receipt. 
+     Since the receipt is likely inside #root (which is body > *), 
+     we use visibility instead of display:none for the parents 
+     to preserve the render tree but hide visuals.
+  */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Targeted visibility for receipt */
+  #receipt-area, 
+  #receipt-area * {
+    visibility: visible;
+  }
+
+  /* Positioning and Layout for the receipt */
   #receipt-area {
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 0;
-    margin: 0;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 5mm !important; /* Small padding for thermal paper margins */
+    
+    /* Reset styles that might interfere */
+    background-color: white !important;
+    color: black !important;
+    font-family: 'Courier New', Courier, monospace !important; /* Thermal look */
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    
+    /* Ensure it doesn't get cut off */
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    
+    /* Remove shadows/borders */
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Ensure modal containers don't trap the content */
+  #root, .fixed, .inset-0, .overflow-hidden {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: auto !important;
+    background: none !important;
+    transform: none !important;
+    z-index: auto !important;
+  }
+
+  /* Dark mode overrides for print */
+  .dark #receipt-area {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* Utilities specific to print */
+  .no-print {
+    display: none !important;
   }
 }
