@@ -13,9 +13,9 @@
 
 @media print {
   /* 
-    GLOBAL RESET 
-    - Remove all browser margins/padding.
-    - Set background to white.
+    Strict Page Reset: 
+    - Remove margins to hide headers/footers (URL, Date).
+    - Auto size for continuous thermal paper.
   */
   @page {
     margin: 0;
@@ -23,6 +23,7 @@
     size: auto;
   }
 
+  /* Reset document flow */
   html, body {
     margin: 0 !important;
     padding: 0 !important;
@@ -30,81 +31,80 @@
     height: auto !important;
     overflow: visible !important;
     background: white !important;
-    color: black !important;
+    min-height: 0 !important;
   }
 
   /* 
-    VISIBILITY RESET
-    1. Hide everything by default.
-    2. Only make the print overlay and its children visible.
+    Visibility Strategy:
+    Hide everything by default, then selectively show the receipt components.
   */
   body * {
     visibility: hidden;
   }
 
-  #print-overlay, 
-  #print-overlay * {
-    visibility: visible;
+  #print-overlay,
+  #print-content,
+  #receipt-area,
+  #receipt-area * {
+    visibility: visible !important;
   }
 
   /* 
-    POSITIONING & LAYOUT
-    - Break the modal out of the 'fixed' centering.
-    - Position it absolutely at top-left to start printing immediately.
-    - Force block display to avoid flexbox centering issues on pages.
+    Reset Modal Overlay:
+    Move it out of 'fixed' position to avoid viewport clipping on Windows.
+    Position it absolutely at the very top left.
   */
   #print-overlay {
     position: absolute !important;
-    left: 0 !important;
     top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     width: 100% !important;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
+    display: block !important; /* Overrides flex centering */
     z-index: 9999 !important;
-    display: block !important; /* Disables flex centering */
-    height: auto !important;
-    backdrop-filter: none !important;
   }
 
   /* 
-    CONTENT CONTAINER
-    - Remove card styling (shadows, rounded corners).
-    - Ensure full width.
+    Reset Modal Content Card:
+    Remove shadows, borders, and strictly remove max-height/overflow clipping.
   */
   #print-content {
+    position: static !important;
     width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     border: none !important;
     box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
     border-radius: 0 !important;
-    background: transparent !important;
+  }
+
+  /* 
+    Receipt Content Formatting:
+    Ensure 100% width and correct font for thermal printers.
+  */
+  #receipt-area {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 4mm !important; /* Minimal padding */
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    color: black !important;
+    background: white !important;
     height: auto !important;
     overflow: visible !important;
   }
 
-  /* 
-    RECEIPT AREA
-    - Explicit font for alignment (Monospace is safer for receipts).
-    - Minimal padding to fit 58mm paper.
-  */
-  #receipt-area {
-    font-family: 'Courier New', Courier, monospace !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    color: black !important;
-    overflow: visible !important;
-  }
-
-  /* Remove scrollbars from the receipt area during print */
-  #receipt-area::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Utility to strictly hide UI elements */
+  /* Force hide the header and footer inside the receipt modal during print */
   .no-print {
     display: none !important;
   }
