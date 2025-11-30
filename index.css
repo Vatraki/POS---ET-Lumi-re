@@ -12,78 +12,95 @@
 }
 
 @media print {
-  /* Reset page constraints and hide browser UI */
+  /* 
+    CRITICAL: Remove browser headers/footers (URL, Date, Page #) 
+    and set paper size to auto to handle continuous thermal rolls.
+  */
   @page {
     margin: 0;
     size: auto;
   }
 
-  /* Reset root containers to avoid clipping */
+  /* Reset document structure for printing */
   html, body {
-    height: auto !important;
-    width: auto !important;
-    overflow: visible !important;
-    background-color: #fff !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background-color: white !important;
   }
 
-  /* 
-     Hide everything visually using visibility. 
-     CRITICAL: Do NOT use display:none on parents (like body > *) because 
-     it removes the element and all its children (including the receipt) from the render tree.
-  */
+  /* Hide all application elements visually, but keep them in DOM to prevent React errors */
   body * {
     visibility: hidden;
   }
 
-  /* Targeted visibility for receipt and its children */
-  #receipt-area, 
-  #receipt-area * {
-    visibility: visible;
+  /* Reset parent containers that might affect positioning */
+  #root, .fixed, .inset-0, .flex, .h-screen, .w-screen {
+    position: static !important;
+    display: block !important;
+    height: auto !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    transform: none !important;
   }
 
-  /* Positioning and Layout for the receipt */
+  /* Expose and style the receipt area */
+  #receipt-area, 
+  #receipt-area * {
+    visibility: visible !important;
+  }
+
   #receipt-area {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 10px !important; /* Standard padding for thermal printers */
     
-    /* Force specific print styling */
-    background-color: white !important;
+    /* 
+       Ensure it fits the paper width exactly. 
+       Using 100% allows it to adapt to 58mm or 80mm paper settings in the driver.
+    */
+    width: 100% !important;
+    max-width: 100% !important;
+    
+    /* Remove app styling interference */
+    margin: 0 !important;
+    padding: 4mm !important; /* Minimal padding for readability */
+    box-sizing: border-box !important;
+    
+    /* Thermal Printer Styling */
+    background: white !important;
     color: black !important;
     font-family: 'Courier New', Courier, monospace !important;
     font-size: 12px !important;
     line-height: 1.2 !important;
-    
-    /* Ensure it doesn't get cut off */
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    
-    /* Remove on-screen decorations */
-    box-shadow: none !important;
     border: none !important;
+    box-shadow: none !important;
     border-radius: 0 !important;
-    z-index: 9999;
+    
+    /* Prevent page breaking inside the receipt if possible (though rolls are continuous) */
+    break-inside: avoid;
   }
 
-  /* 
-     Reset parent containers (modal wrappers, root, etc.) to ensure they don't 
-     trap or clip the absolute positioned receipt.
-  */
-  #root, .fixed, .inset-0, .overflow-hidden, .overflow-y-auto, .h-screen, .h-full {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-    width: auto !important;
-    transform: none !important;
-    background: none !important;
+  /* Ensure text doesn't overflow horizontally on small papers */
+  #receipt-area p, 
+  #receipt-area div, 
+  #receipt-area span,
+  #receipt-area td,
+  #receipt-area th {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
   }
-
+  
+  /* Hide scrollbars specifically for print to avoid artifacts */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+  
   /* Utilities specific to print */
   .no-print {
     display: none !important;
