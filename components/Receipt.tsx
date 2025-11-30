@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Order } from '../types';
 import { Printer, X } from 'lucide-react';
 
@@ -12,7 +13,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ order, onClose }) => {
     window.print();
   };
 
-  return (
+  const content = (
     <div 
       id="print-overlay" 
       className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
@@ -121,4 +122,6 @@ export const Receipt: React.FC<ReceiptProps> = ({ order, onClose }) => {
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 };
