@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { Order } from '../types';
 import { Printer, X } from 'lucide-react';
 
@@ -13,10 +12,11 @@ export const Receipt: React.FC<ReceiptProps> = ({ order, onClose }) => {
     window.print();
   };
 
-  const content = (
+  return (
     <div 
       id="print-overlay" 
       className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div 
         id="print-content" 
@@ -33,74 +33,74 @@ export const Receipt: React.FC<ReceiptProps> = ({ order, onClose }) => {
         {/* Receipt Area - The only part visible in print */}
         <div 
           id="receipt-area" 
-          className="p-8 overflow-y-auto font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          className="p-6 print:p-0 overflow-y-auto font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 print:text-black print:overflow-visible"
         >
           {/* Logo / Brand */}
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold uppercase tracking-wider mb-2 text-gray-900 dark:text-white leading-none">Lumière Café</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">123 Avenue de la République</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">75011 Paris</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Tél: 01 23 45 67 89</p>
+          <div className="text-center mb-6 print:mb-4">
+            <h1 className="text-2xl font-bold uppercase tracking-wider mb-2 text-gray-900 dark:text-white print:text-black leading-none">Lumière Café</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 print:text-black">123 Avenue de la République</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 print:text-black">75011 Paris</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 print:text-black mt-1">Tél: 01 23 45 67 89</p>
           </div>
           
           {/* Order Info */}
-          <div className="border-b border-dashed border-gray-300 dark:border-gray-600 pb-3 mb-4 space-y-1">
+          <div className="border-b border-dashed border-gray-300 dark:border-gray-600 print:border-black pb-3 mb-4 space-y-1">
             <div className="flex justify-between text-xs">
-              <span className="text-gray-500 dark:text-gray-400">Commande</span>
-              <span className="font-bold">#{order.orderNumber}</span>
+              <span className="text-gray-500 dark:text-gray-400 print:text-black">Commande</span>
+              <span className="font-bold print:text-black">#{order.orderNumber}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-gray-500 dark:text-gray-400">Date</span>
-              <span>{order.date.toLocaleDateString('fr-FR')} {order.date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</span>
+              <span className="text-gray-500 dark:text-gray-400 print:text-black">Date</span>
+              <span className="print:text-black">{order.date.toLocaleDateString('fr-FR')} {order.date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-gray-500 dark:text-gray-400">Serveur</span>
-              <span>{order.waiterName}</span>
+              <span className="text-gray-500 dark:text-gray-400 print:text-black">Serveur</span>
+              <span className="print:text-black">{order.waiterName}</span>
             </div>
           </div>
 
           {/* Items */}
           <table className="w-full mb-4 text-sm">
             <thead>
-              <tr className="text-left border-b border-gray-300 dark:border-gray-600">
-                <th className="pb-2 font-semibold w-full">Article</th>
-                <th className="pb-2 text-center px-2">Qté</th>
-                <th className="pb-2 text-right whitespace-nowrap">Prix</th>
+              <tr className="text-left border-b border-gray-300 dark:border-gray-600 print:border-black">
+                <th className="pb-2 font-semibold w-full print:text-black">Article</th>
+                <th className="pb-2 text-center px-2 print:text-black">Qté</th>
+                <th className="pb-2 text-right whitespace-nowrap print:text-black">Prix</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-dashed divide-gray-100 dark:divide-gray-800">
+            <tbody className="divide-y divide-dashed divide-gray-100 dark:divide-gray-800 print:divide-gray-300">
               {order.items.map((item, idx) => (
                 <tr key={idx}>
-                  <td className="py-2 align-top">{item.name}</td>
-                  <td className="py-2 text-center align-top px-2">{item.quantity}</td>
-                  <td className="py-2 text-right align-top whitespace-nowrap">{(item.price * item.quantity).toFixed(2)}€</td>
+                  <td className="py-2 align-top print:text-black">{item.name}</td>
+                  <td className="py-2 text-center align-top px-2 print:text-black">{item.quantity}</td>
+                  <td className="py-2 text-right align-top whitespace-nowrap print:text-black">{(item.price * item.quantity).toFixed(2)}€</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
           {/* Totals */}
-          <div className="border-t border-dashed border-gray-300 dark:border-gray-600 pt-3 space-y-1">
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="border-t border-dashed border-gray-300 dark:border-gray-600 print:border-black pt-3 space-y-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 print:text-black">
               <span>Sous-total HT</span>
               <span>{(order.total / 1.1).toFixed(2)}€</span>
             </div>
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 print:text-black mb-2">
               <span>TVA (10%)</span>
               <span>{(order.total - (order.total / 1.1)).toFixed(2)}€</span>
             </div>
-            <div className="flex justify-between text-xl font-bold border-t-2 border-gray-800 dark:border-white pt-2 mt-2">
-              <span>TOTAL</span>
-              <span>{order.total.toFixed(2)}€</span>
+            <div className="flex justify-between text-xl font-bold border-t-2 border-gray-800 dark:border-white print:border-black pt-2 mt-2">
+              <span className="print:text-black">TOTAL</span>
+              <span className="print:text-black">{order.total.toFixed(2)}€</span>
             </div>
           </div>
           
           <div className="mt-8 text-center">
-            <div className="inline-block px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs font-bold mb-4">
+            <div className="inline-block px-3 py-1 border border-gray-300 dark:border-gray-600 print:border-black rounded text-xs font-bold mb-4 print:text-black">
               {order.paymentMethod === 'GENERIC' ? 'CB / ESPÈCES' : order.paymentMethod}
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Merci de votre visite !</p>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500">SIRET: 123 456 789 00012</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 print:text-black mb-1">Merci de votre visite !</p>
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 print:text-black">SIRET: 123 456 789 00012</p>
           </div>
         </div>
 
@@ -122,6 +122,4 @@ export const Receipt: React.FC<ReceiptProps> = ({ order, onClose }) => {
       </div>
     </div>
   );
-
-  return createPortal(content, document.body);
 };

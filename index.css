@@ -12,8 +12,14 @@
 }
 
 @media print {
+  /* 
+    GLOBAL RESET 
+    - Remove all browser margins/padding.
+    - Set background to white.
+  */
   @page {
     margin: 0;
+    padding: 0;
     size: auto;
   }
 
@@ -22,35 +28,53 @@
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
-    background: white !important;
     overflow: visible !important;
-  }
-
-  /* Hide the main application root */
-  #root {
-    display: none !important;
-  }
-
-  /* Target the portal overlay */
-  #print-overlay {
-    position: static !important; /* Static allows flow */
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
     background: white !important;
+    color: black !important;
+  }
+
+  /* 
+    VISIBILITY RESET
+    1. Hide everything by default.
+    2. Only make the print overlay and its children visible.
+  */
+  body * {
+    visibility: hidden;
+  }
+
+  #print-overlay, 
+  #print-overlay * {
+    visibility: visible;
+  }
+
+  /* 
+    POSITIONING & LAYOUT
+    - Break the modal out of the 'fixed' centering.
+    - Position it absolutely at top-left to start printing immediately.
+    - Force block display to avoid flexbox centering issues on pages.
+  */
+  #print-overlay {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    z-index: 9999;
+    background: white !important;
+    z-index: 9999 !important;
+    display: block !important; /* Disables flex centering */
+    height: auto !important;
+    backdrop-filter: none !important;
   }
 
-  /* Hide non-print elements inside the portal if necessary */
-  #print-overlay .no-print {
-    display: none !important;
-  }
-
+  /* 
+    CONTENT CONTAINER
+    - Remove card styling (shadows, rounded corners).
+    - Ensure full width.
+  */
   #print-content {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
@@ -58,32 +82,30 @@
     border-radius: 0 !important;
     background: transparent !important;
     height: auto !important;
-    max-height: none !important;
     overflow: visible !important;
   }
 
+  /* 
+    RECEIPT AREA
+    - Explicit font for alignment (Monospace is safer for receipts).
+    - Minimal padding to fit 58mm paper.
+  */
   #receipt-area {
-    /* Critical for thermal printers: Let the content flow naturally */
-    width: 100% !important;
-    margin: 0 !important;
-    
-    /* Small safe padding, adjusted for typical 80mm/58mm margins */
-    padding: 0 4mm 4mm 4mm !important; 
-    
-    box-sizing: border-box !important;
     font-family: 'Courier New', Courier, monospace !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
     color: black !important;
-    
-    /* Ensure no horizontal scroll/overflow triggering a 2nd page */
-    max-width: 100% !important;
-    overflow: hidden !important; 
+    overflow: visible !important;
   }
-  
-  /* Ensure text wraps to avoid horizontal bleed */
-  #receipt-area * {
-    word-wrap: break-word;
-    white-space: pre-wrap;
+
+  /* Remove scrollbars from the receipt area during print */
+  #receipt-area::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Utility to strictly hide UI elements */
+  .no-print {
+    display: none !important;
   }
 }
