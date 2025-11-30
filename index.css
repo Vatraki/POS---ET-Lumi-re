@@ -13,105 +13,98 @@
 
 @media print {
   /* 
-    GLOBAL PAGE RESET
-    - @page margin: 0mm removes default browser headers/footers (URL, Date, Page #) in most modern browsers.
-    - size: auto allows the printer driver to determine the paper size (crucial for thermal rolls).
+    Strict Page Reset: 
+    - Remove margins to hide headers/footers (URL, Date).
+    - Auto size for continuous thermal paper.
   */
   @page {
-    margin: 0mm;
+    margin: 0;
+    padding: 0;
     size: auto;
   }
 
-  /* 
-    HTML/BODY RESET
-    - Force background white.
-    - height: auto and overflow: visible are CRITICAL for iOS to print the full content length.
-    - Remove all margins/padding to ensure content starts at exact top-left.
-  */
+  /* Reset document flow */
   html, body {
-    background-color: white !important;
-    height: auto !important;
-    min-height: 100% !important;
-    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
     overflow: visible !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* HIDE APPLICATION UI */
-  body > * {
-    display: none !important;
-  }
-
-  /* 
-    VISIBILITY STRATEGY
-    - Instead of display:none on body (which kills React root), we use the specific structure of Receipt.tsx.
-    - We target #root to hide everything, but override for the receipt overlay.
-  */
-  #root {
-    display: none !important;
-  }
-
-  /* 
-    RECEIPT OVERLAY & CONTENT 
-    - Re-enable display for our specific receipt components.
-    - Position absolute top:0 left:0 to take over the 'paper'.
-  */
-  #print-overlay {
-    display: block !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
     background: white !important;
-    z-index: 9999 !important;
-    visibility: visible !important;
-  }
-
-  #print-content {
-    display: block !important;
-    position: static !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: white !important;
-    visibility: visible !important;
-    overflow: visible !important;
+    min-height: 0 !important;
   }
 
   /* 
-    RECEIPT AREA 
-    - The actual content box.
-    - padding: 0 to maximize width, or small padding (e.g. 2mm) if desired. 
-    - We use a small padding to prevent text touching the exact edge of the paper roll.
+    Visibility Strategy:
+    Hide everything by default, then selectively show the receipt components.
   */
-  #receipt-area {
-    display: block !important;
-    visibility: visible !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 2mm 2mm 10mm 2mm !important; /* Bottom padding helps ensure the cutter doesn't cut the last line */
-    font-family: 'Courier New', Courier, monospace !important;
-    font-size: 12px !important;
-    color: black !important;
-    line-height: 1.2 !important;
+  body * {
+    visibility: hidden;
   }
 
-  /* Ensure all children of the receipt area are visible */
+  #print-overlay,
+  #print-content,
+  #receipt-area,
   #receipt-area * {
     visibility: visible !important;
   }
 
-  /* Hide the modal close button and action buttons specifically */
+  /* 
+    Reset Modal Overlay:
+    Move it out of 'fixed' position to avoid viewport clipping on Windows.
+    Position it absolutely at the very top left.
+  */
+  #print-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    display: block !important; /* Overrides flex centering */
+    z-index: 9999 !important;
+  }
+
+  /* 
+    Reset Modal Content Card:
+    Remove shadows, borders, and strictly remove max-height/overflow clipping.
+  */
+  #print-content {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    border-radius: 0 !important;
+  }
+
+  /* 
+    Receipt Content Formatting:
+    Ensure 100% width and correct font for thermal printers.
+  */
+  #receipt-area {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 4mm !important; /* Minimal padding */
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    color: black !important;
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Force hide the header and footer inside the receipt modal during print */
   .no-print {
     display: none !important;
   }
