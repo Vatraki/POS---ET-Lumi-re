@@ -28,21 +28,16 @@
     padding: 0 !important;
   }
 
-  /* Hide everything by default */
-  body > * {
-    display: none !important;
-  }
-
-  /* BUT, we need to show the receipt. 
-     Since the receipt is likely inside #root (which is body > *), 
-     we use visibility instead of display:none for the parents 
-     to preserve the render tree but hide visuals.
+  /* 
+     Hide everything visually using visibility. 
+     CRITICAL: Do NOT use display:none on parents (like body > *) because 
+     it removes the element and all its children (including the receipt) from the render tree.
   */
   body * {
     visibility: hidden;
   }
 
-  /* Targeted visibility for receipt */
+  /* Targeted visibility for receipt and its children */
   #receipt-area, 
   #receipt-area * {
     visibility: visible;
@@ -55,12 +50,12 @@
     top: 0 !important;
     width: 100% !important;
     margin: 0 !important;
-    padding: 5mm !important; /* Small padding for thermal paper margins */
+    padding: 10px !important; /* Standard padding for thermal printers */
     
-    /* Reset styles that might interfere */
+    /* Force specific print styling */
     background-color: white !important;
     color: black !important;
-    font-family: 'Courier New', Courier, monospace !important; /* Thermal look */
+    font-family: 'Courier New', Courier, monospace !important;
     font-size: 12px !important;
     line-height: 1.2 !important;
     
@@ -69,29 +64,26 @@
     max-height: none !important;
     overflow: visible !important;
     
-    /* Remove shadows/borders */
+    /* Remove on-screen decorations */
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
+    z-index: 9999;
   }
 
-  /* Ensure modal containers don't trap the content */
-  #root, .fixed, .inset-0, .overflow-hidden {
+  /* 
+     Reset parent containers (modal wrappers, root, etc.) to ensure they don't 
+     trap or clip the absolute positioned receipt.
+  */
+  #root, .fixed, .inset-0, .overflow-hidden, .overflow-y-auto, .h-screen, .h-full {
     position: static !important;
     overflow: visible !important;
     height: auto !important;
     width: auto !important;
-    background: none !important;
     transform: none !important;
-    z-index: auto !important;
+    background: none !important;
   }
 
-  /* Dark mode overrides for print */
-  .dark #receipt-area {
-    background-color: white !important;
-    color: black !important;
-  }
-  
   /* Utilities specific to print */
   .no-print {
     display: none !important;
