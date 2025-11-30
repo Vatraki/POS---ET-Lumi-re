@@ -13,95 +13,98 @@
 
 @media print {
   /* 
-    CRITICAL: Remove browser headers/footers (URL, Date, Page #) 
-    and set paper size to auto to handle continuous thermal rolls.
+    Strict Page Reset: 
+    - Remove margins to hide headers/footers (URL, Date).
+    - Auto size for continuous thermal paper.
   */
   @page {
     margin: 0;
+    padding: 0;
     size: auto;
   }
 
-  /* Reset document structure for printing */
+  /* Reset document flow */
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
     overflow: visible !important;
-    background-color: white !important;
+    background: white !important;
+    min-height: 0 !important;
   }
 
-  /* Hide all application elements visually, but keep them in DOM to prevent React errors */
+  /* 
+    Visibility Strategy:
+    Hide everything by default, then selectively show the receipt components.
+  */
   body * {
     visibility: hidden;
   }
 
-  /* Reset parent containers that might affect positioning */
-  #root, .fixed, .inset-0, .flex, .h-screen, .w-screen {
-    position: static !important;
-    display: block !important;
-    height: auto !important;
-    width: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    transform: none !important;
-  }
-
-  /* Expose and style the receipt area */
-  #receipt-area, 
+  #print-overlay,
+  #print-content,
+  #receipt-area,
   #receipt-area * {
     visibility: visible !important;
   }
 
-  #receipt-area {
+  /* 
+    Reset Modal Overlay:
+    Move it out of 'fixed' position to avoid viewport clipping on Windows.
+    Position it absolutely at the very top left.
+  */
+  #print-overlay {
     position: absolute !important;
-    left: 0 !important;
     top: 0 !important;
-    
-    /* 
-       Ensure it fits the paper width exactly. 
-       Using 100% allows it to adapt to 58mm or 80mm paper settings in the driver.
-    */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    display: block !important; /* Overrides flex centering */
+    z-index: 9999 !important;
+  }
+
+  /* 
+    Reset Modal Content Card:
+    Remove shadows, borders, and strictly remove max-height/overflow clipping.
+  */
+  #print-content {
+    position: static !important;
     width: 100% !important;
     max-width: 100% !important;
-    
-    /* Remove app styling interference */
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
     margin: 0 !important;
-    padding: 4mm !important; /* Minimal padding for readability */
-    box-sizing: border-box !important;
-    
-    /* Thermal Printer Styling */
+    padding: 0 !important;
     background: white !important;
-    color: black !important;
+    border-radius: 0 !important;
+  }
+
+  /* 
+    Receipt Content Formatting:
+    Ensure 100% width and correct font for thermal printers.
+  */
+  #receipt-area {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 4mm !important; /* Minimal padding */
     font-family: 'Courier New', Courier, monospace !important;
     font-size: 12px !important;
     line-height: 1.2 !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    
-    /* Prevent page breaking inside the receipt if possible (though rolls are continuous) */
-    break-inside: avoid;
+    color: black !important;
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  /* Ensure text doesn't overflow horizontally on small papers */
-  #receipt-area p, 
-  #receipt-area div, 
-  #receipt-area span,
-  #receipt-area td,
-  #receipt-area th {
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
-  }
-  
-  /* Hide scrollbars specifically for print to avoid artifacts */
-  ::-webkit-scrollbar {
-    display: none !important;
-  }
-  
-  /* Utilities specific to print */
+  /* Force hide the header and footer inside the receipt modal during print */
   .no-print {
     display: none !important;
   }
